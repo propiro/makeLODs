@@ -1,6 +1,6 @@
- macroScript makeLODs
+macroScript makeLODs
  Category:"_Piro_Tools"
- toolTip:"makeLODs 0.3"
+ toolTip:"makeLODs 0.4"
  buttontext:"makeLODs"
 (
 
@@ -30,8 +30,9 @@
 			global arr_lodObjectsEndVerts = #()
 			global lodObjectStartFaces = 0
 			global arr_lodObjectsEndFaces = #()
-			
-			
+			global currentWorkName = ""
+			global lastWorkName = "Last"
+			global newWorkObject = false
 			
 						global debugTitle = "..."
 						global labelDebugText = ("How to use:\n1. Select object you want to make LODs for. Should be editable_poly. \n"  + 
@@ -47,12 +48,12 @@
 			
 
 			
-		rollout roll_makeLODs "makeLODs 0.3" width:410 height:710
+		rollout roll_makeLODs "makeLODs 0.4" width:410 height:710
 	(
 		label lbl1 "LOD Object:" align:#left
 		edittext edt_LODobject "" text:LODobject_Name
 		button btn_GetObject "Get Object to make LODs" pos:[25,50]
-		checkbox cbx_makeCopy "Work on copy?" checked:true tooltip:"Will create copy of current model, hide it and add _LOD0 to duplicate name." pos:[185,55]
+		checkbox cbx_makeCopy "Work on copy?" checked:false tooltip:"Will create copy of current model, hide it and add _LOD0 to duplicate name." pos:[185,55]
 		checkbox cbx_makeBackup "Backup scene?" checked:true tooltip:"Will create copy of current scene just in case something go wrong. In case of fail, run  this script again, and hit RESTORE." pos:[285,55]
 		checkbox cbx_triangulate "Triangulate?" checked:false tooltip:"Will triangulate model after LOD creation." pos:[10,240]
 		checkbox cbx_autosmooth "Autosmooth?" checked:true tooltip:"Will autosmooth with desired angle after LOD creation." pos:[150,240]
@@ -77,9 +78,18 @@
 		checkbutton cbx_is_enable_4 "-LOD3-" checked:true pos:[220, 200] tooltip:"Enable // Disable LOD creation of this level."
 		checkbutton cbx_is_enable_5 "-LOD4-" checked:false pos:[290, 200] tooltip:"Enable // Disable LOD creation of this level."
 		
-		button btn_makeLODs "ITS GO TIME" checked:false pos:[150, 280] width:100 height:100 tooltip:"MAKE LODS!"
-		button btn_restore "restore scene" checked:false pos:[250, 280] width:50 height:50 tooltip:"restore scene from previously fetched backup."
-		button btn_deleteLODs "delete LODs" checked:false pos:[250, 330] width:50 height:50 tooltip:"restore scene from previously fetched backup."
+		button btn_makeLODs "ITS GO TIME" checked:false pos:[15, 280] width:100 height:100 tooltip:"MAKE LODS!"
+		button btn_restore "restore scene" checked:false pos:[125, 280] width:50 height:50 tooltip:"restore scene from previously fetched backup."
+		button btn_deleteLODs "delete LODs" checked:false pos:[125, 330] width:50 height:50 tooltip:"Select then delete all objects that contain _LOD suffix in their name."
+		
+		label lblSelectLods "Select:" align:#left pos:[190, 320]
+		button btn_selectLOD0 "LOD0" checked:false pos:[230, 280] width:50 height:20 tooltip:"Select all LOD0 meshes."
+		button btn_selectLOD1 "LOD1" checked:false pos:[230, 300] width:50 height:20 tooltip:"Select all LOD1 meshes."
+		button btn_selectLOD2 "LOD2" checked:false pos:[230, 320] width:50 height:20 tooltip:"Select all LOD2 meshes."
+		button btn_selectLOD3 "LOD3" checked:false pos:[230, 340] width:50 height:20 tooltip:"Select all LOD3 meshes."
+		button btn_selectLOD4 "LOD4" checked:false pos:[230, 360] width:50 height:20 tooltip:"Select all LOD4 meshes."
+		button btn_expLODs "Export \nSelected \nLODs" checked:false pos:[300, 305] width:50 height:50 tooltip:"Export Selected Objects, should you use it to quick export LODs."
+		
 		
 		
 	
@@ -365,7 +375,30 @@ on btn_makeLODs pressed do
 			(
 				max hold				
 			)
+			currentWorkName = workObject.name
+			if 	(currentWorkName == lastWorkName) then
+			(
+				newWorkObject = false
+							labelDebugText ="It looks like you still have previous object selected, continue?"
+				answer = yesNoCancelBox "Yes - Do it again, i know what im doing, im a big boy.\nNo - Let me pick up new object" title:"" beep:on
+			case answer of
+			(
+			(#yes): newWorkObject = true
+			(#no): newWorkObject = false
+			(default): newWorkObject = false
+)
+				
+				
+				
+				
+				) else 
+				(
+					newWorkObject = true
+								labelDebugText ="New object detected, proceeding."
+					)
 			
+			if (newWorkObject == true) then
+					(
 			if cbx_makeCopy.checked == true then
 			(
 				fn_backupOriginalMesh (workObject)
@@ -389,37 +422,88 @@ on btn_makeLODs pressed do
 				(
 					fn_decimateLOD(j)
 					
-									print("LOD " +j as string + " is now " + arr_lodObjectsNames[j] as string + " and is decimated from \n" +  lodObjectStartFaces as string +
+									print("LOD " +(j-1) as string + " is now " + arr_lodObjectsNames[j] as string + " and is decimated from \n" +  lodObjectStartFaces as string +
 											" to " + arr_lodObjectsEndFaces[j] as string +"(" +((arr_lodObjectsEndFaces[j] / lodObjectStartFaces )*100 ) as string + "%) faces , and " +
 										lodObjectStartVerts as string +" to " + arr_lodObjectsEndVerts[j] as string +"(" +((arr_lodObjectsEndVerts[j] / lodObjectStartVerts)*100 ) as string + "%) verts .\n"+
 										"---------------------------------------------------------------------------------------" )
 										
-										labelDebugText += ("LOD" +j as string+": \n[" +  lodObjectStartFaces as string +" -> " + arr_lodObjectsEndFaces[j] as string +"(" +((arr_lodObjectsEndFaces[j] / lodObjectStartFaces )*100 ) as string + "%) faces] \n[" +
+										labelDebugText += ("LOD" +(j-1) as string+": \n[" +  lodObjectStartFaces as string +" -> " + arr_lodObjectsEndFaces[j] as string +"(" +((arr_lodObjectsEndFaces[j] / lodObjectStartFaces )*100 ) as string + "%) faces] \n[" +
 										lodObjectStartVerts as string +" -> " + arr_lodObjectsEndVerts[j] as string +" (" +((arr_lodObjectsEndVerts[j] / lodObjectStartVerts)*100 ) as string + "%) verts]\n" 
-										)
-					
-					
-				
+										)				
 										windows.processPostedMessages()
-										
-				
-
 				)
+				
+				
 			)
-
+			labelDebugText += "#### DONE ####"
+			print("### DONE ###")
+			lastWorkName = currentWorkName
+		)
 			
-						
+		)	
+
+	on btn_deleteLODs pressed do
+	(
+		tempChildName = "*_LOD*"
+		select  (execute ("$'"+ tempChildName + "'"))
+			labelDebugText ="All " +selection.count as string + " _LOD's deleted!"
+		print labelDebugText	
+		delete selection
+		
+		)
+		
+			on btn_selectLOD0 pressed do
+	(
+		tempChildName = "*_LOD0*"
+		select  (execute ("$'"+ tempChildName + "'"))
+		labelDebugText ="All " +selection.count as string + " _LOD0's selected!"
+		print labelDebugText	
+		)
+		
+					on btn_selectLOD1 pressed do
+	(
+		tempChildName = "*_LOD1*"
+		select  (execute ("$'"+ tempChildName + "'"))
+		labelDebugText ="All " +selection.count as string + " _LOD1's selected!"
+		print labelDebugText	
+		)
+		
+					on btn_selectLOD2 pressed do
+	(
+		tempChildName = "*_LOD2*"
+		select  (execute ("$'"+ tempChildName + "'"))
+		labelDebugText ="All " +selection.count as string + " _LOD2's selected!"
+		print labelDebugText	
+		)
+		
+					on btn_selectLOD3 pressed do
+	(
+		tempChildName = "*_LOD3*"
+		select  (execute ("$'"+ tempChildName + "'"))
+		labelDebugText ="All " +selection.count as string + " _LOD3's selected!"
+		print labelDebugText	
+		)
+
+					on btn_selectLOD4 pressed do
+	(
+		tempChildName = "*_LOD4*"
+		select  (execute ("$'"+ tempChildName + "'"))
+		labelDebugText ="All " +selection.count as string + " _LOD4's selected!"
+		print labelDebugText	
 		)
 		
 		
-		
-		
-		
-		
+		on btn_expLODs pressed do
+		(
+			max file export selected
+			max hide selection			
+			
+			)
 		
 		
 		
 	)
+
 
 	createdialog roll_makeLODs
 )
