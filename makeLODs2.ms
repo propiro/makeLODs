@@ -39,7 +39,10 @@ macroScript makeLODs
 															"2. Click on GET OBJECT TO MAKE LODS button. \n"  +
 															"3. Set desired settings, adjust LOD percentages if needed. \n"  +
 															"4. Click ITS GO TIME to start generation process. \n" +
-															"Unless you unchecked backup option, if something go wrong, \nyou can restore by using right button. \n"    							
+															"Unless you unchecked backup option, if something go wrong, \nyou can restore by using right button. \n" +
+															"\n \n Hover over any UI element to get tooltip help."
+							
+							    							
 							
 							
 							
@@ -48,47 +51,55 @@ macroScript makeLODs
 			
 
 			
-		rollout roll_makeLODs "makeLODs 0.5" width:410 height:710
+		rollout roll_makeLODs "makeLODs 0.6" width:410 height:710
 	(
 		label lbl1 "LOD Object:" align:#left
 		edittext edt_LODobject "" text:LODobject_Name
-		button btn_GetObject "Get Object to make LODs" pos:[25,50]
+		button btn_GetObject "Get Object to make LODs" pos:[25,50] tooltip:"Click after selecting object to set it \nas working object that will get LODs."
 		checkbox cbx_makeCopy "Work on copy?" checked:false tooltip:"Will create copy of current model, hide it and add _LOD0 to duplicate name." pos:[185,55]
 		checkbox cbx_makeBackup "Backup scene?" checked:true tooltip:"Will create copy of current scene just in case something go wrong. In case of fail, run  this script again, and hit RESTORE." pos:[285,55]
 		checkbox cbx_triangulate "Triangulate?" checked:false tooltip:"Will triangulate model after LOD creation." pos:[10,240]
 		checkbox cbx_autosmooth "Autosmooth?" checked:true tooltip:"Will autosmooth with desired angle after LOD creation." pos:[150,240]
-		spinner autosmooth_spinner "Autosmooth angle" enabled: true range:[0,180,33] type:#integer pos:[240,241] fieldwidth:40 toolTip:"Set percentage  of original mesh triangles."
+		spinner autosmooth_spinner "Autosmooth angle" enabled: true range:[0,180,33] type:#integer pos:[240,241] fieldwidth:40 toolTip:"Set percentage of original mesh triangles."
 		
-		slider percentage_slider1 "LOD0" orient:#vertical ticks:15 range: [0,100,100] pos:[10,80] type:#float toolTip:"Set percentage  of original mesh triangles."
-		slider percentage_slider2 "LOD1" orient:#vertical ticks:15 range: [0,100,75] pos:[80,80] type:#float toolTip:"Set percentage  of original mesh triangles."
-		slider percentage_slider3 "LOD2" orient:#vertical ticks:15 range: [0,100,50] pos:[150,80]  type:#float toolTip:"Set percentage  of original mesh triangles."
-		slider percentage_slider4 "LOD3" orient:#vertical ticks:15 range: [0,100,25] pos:[220,80]  type:#float toolTip:"Set percentage  of original mesh triangles."
-		slider percentage_slider5 "LOD4" orient:#vertical ticks:15 range: [0,100,15] pos:[290,80] type:#float toolTip:"Set percentage  of original mesh triangles."
+		slider percentage_slider1 "LOD0" orient:#vertical ticks:15 range: [0,100,100] pos:[10,80] type:#float toolTip:"Set percentage of original mesh triangles."
+		slider percentage_slider2 "LOD1" orient:#vertical ticks:15 range: [0,100,75] pos:[80,80] type:#float toolTip:"Set percentage of original mesh triangles."
+		slider percentage_slider3 "LOD2" orient:#vertical ticks:15 range: [0,100,50] pos:[150,80]  type:#float toolTip:"Set percentage of original mesh triangles."
+		slider percentage_slider4 "LOD3" orient:#vertical ticks:15 range: [0,100,25] pos:[220,80]  type:#float toolTip:"Set percentage of original mesh triangles."
+		slider percentage_slider5 "LOD4" orient:#vertical ticks:15 range: [0,100,15] pos:[290,80] type:#float toolTip:"Set percentage of original mesh triangles."
 		
-		spinner percentage_spinner1 "" range:[0,100,100] type:#float pos:[10,180] fieldwidth:40 toolTip:"Set percentage  of original mesh triangles."
-		spinner percentage_spinner2 "" range:[0,100,75] type:#float pos:[80,180] fieldwidth:40 toolTip:"Set percentage  of original mesh triangles."
-		spinner percentage_spinner3 "" range:[0,100,50] type:#float pos:[150,180] fieldwidth:40 toolTip:"Set percentage  of original mesh triangles."
-		spinner percentage_spinner4 "" range:[0,100,25] type:#float pos:[220,180] fieldwidth:40 toolTip:"Set percentage  of original mesh triangles."
-		spinner percentage_spinner5 "" range:[0,100,15] type:#float pos:[290,180] fieldwidth:40 toolTip:"Set percentage  of original mesh triangles."
+		spinner percentage_spinner1 "" range:[0,100,100] type:#float pos:[10,180] fieldwidth:40 toolTip:"Set percentage of original mesh triangles."
+		spinner percentage_spinner2 "" range:[0,100,75] type:#float pos:[80,180] fieldwidth:40 toolTip:"Set percentage of original mesh triangles."
+		spinner percentage_spinner3 "" range:[0,100,50] type:#float pos:[150,180] fieldwidth:40 toolTip:"Set percentage of original mesh triangles."
+		spinner percentage_spinner4 "" range:[0,100,25] type:#float pos:[220,180] fieldwidth:40 toolTip:"Set percentage of original mesh triangles."
+		spinner percentage_spinner5 "" range:[0,100,15] type:#float pos:[290,180] fieldwidth:40 toolTip:"Set percentage of original mesh triangles."
 		
-		button btn_defaults "Default Values" checked:false pos:[340, 100] width:60 height:60 tooltip:"Enable // Disable LOD creation of this level."
+		button btn_defaults "Default Values" checked:false pos:[340, 100] width:60 height:60 tooltip:"Return to default LOD values of \n100/75/50/25/10."
 		checkbutton cbx_is_enable_1 "-LOD0-" checked:true pos:[10, 200] tooltip:"Enable // Disable LOD creation of this level."
 		checkbutton cbx_is_enable_2 "-LOD1-" checked:true pos:[80, 200] tooltip:"Enable // Disable LOD creation of this level."
 		checkbutton cbx_is_enable_3 "-LOD2-" checked:true pos:[150, 200] tooltip:"Enable // Disable LOD creation of this level."
 		checkbutton cbx_is_enable_4 "-LOD3-" checked:true pos:[220, 200] tooltip:"Enable // Disable LOD creation of this level."
 		checkbutton cbx_is_enable_5 "-LOD4-" checked:false pos:[290, 200] tooltip:"Enable // Disable LOD creation of this level."
 		
+		
 		button btn_makeLODs "ITS GO TIME" checked:false pos:[15, 280] width:100 height:100 tooltip:"MAKE LODS!"
 		button btn_restore "restore scene" checked:false pos:[125, 280] width:50 height:50 tooltip:"restore scene from previously fetched backup."
 		button btn_deleteLODs "delete LODs" checked:false pos:[125, 330] width:50 height:50 tooltip:"Select then delete all objects that contain _LOD suffix in their name."
 		
-		label lblSelectLods "Select:" align:#left pos:[190, 320]
-		button btn_selectLOD0 "LOD0" checked:false pos:[230, 280] width:50 height:20 tooltip:"Select all LOD0 meshes."
-		button btn_selectLOD1 "LOD1" checked:false pos:[230, 300] width:50 height:20 tooltip:"Select all LOD1 meshes."
-		button btn_selectLOD2 "LOD2" checked:false pos:[230, 320] width:50 height:20 tooltip:"Select all LOD2 meshes."
-		button btn_selectLOD3 "LOD3" checked:false pos:[230, 340] width:50 height:20 tooltip:"Select all LOD3 meshes."
-		button btn_selectLOD4 "LOD4" checked:false pos:[230, 360] width:50 height:20 tooltip:"Select all LOD4 meshes."
-		button btn_expLODs "Export \nSelected \nLODs" checked:false pos:[300, 305] width:50 height:50 tooltip:"Export Selected Objects, should you use it to quick export LODs."
+		label lblSelectLods "LMB \nSelect:" align:#left pos:[180, 290] width:40 height:30
+		label lblORLods "OR" align:#left pos:[180, 322] width:40 height:30
+		label lblShowLods "RMB \nIsolate:" align:#left pos:[180, 340] width:40 height:30
+		
+		button btn_selectLOD0 "LOD0" checked:false pos:[230, 280] width:50 height:20 tooltip:"Left Mouse Button: Select all LOD0 meshes.\n Right Mouse Button: Isolate view on LOD0 Meshes"
+		button btn_selectLOD1 "LOD1" checked:false pos:[230, 300] width:50 height:20 tooltip:"Left Mouse Button: Select all LOD1 meshes.\n Right Mouse Button: Isolate view on LOD1 Meshes"
+		button btn_selectLOD2 "LOD2" checked:false pos:[230, 320] width:50 height:20 tooltip:"Left Mouse Button: Select all LOD2 meshes.\n Right Mouse Button: Isolate view on LOD2 Meshes"
+		button btn_selectLOD3 "LOD3" checked:false pos:[230, 340] width:50 height:20 tooltip:"Left Mouse Button: Select all LOD3 meshes.\n Right Mouse Button: Isolate view on LOD3 Meshes"
+		button btn_selectLOD4 "LOD4" checked:false pos:[230, 360] width:50 height:20 tooltip:"Left Mouse Button: Select all LOD4 meshes.\n Right Mouse Button: Isolate view on LOD4 Meshes"
+		button btn_selectLODall "ALL" checked:false pos:[230, 380] width:50 height:20 tooltip:"Left Mouse Button: Select all LOD meshes.\n Right Mouse Button: View all LOD Meshes"
+		
+		slider slider_LODswitch "TEST" orient:#vertical ticks:5 range: [5,0,0] pos:[290,270] height:120 type:#float toolTip:"Drag to test LODs."
+		
+		button btn_expLODs "Export \nSelected \nLODs" checked:false pos:[330, 305] width:50 height:50 tooltip:"Export Selected Objects, should you use it to quick export LODs."
 		
 		
 		
@@ -188,7 +199,22 @@ fn fn_decimateLOD lodNumber =
 
 		)
 	
-		
+		fn setVisibilitySelected amount =
+		(
+			if (amount != 0) then
+			(
+			$.visibility = true
+				unhide $
+			)
+			if (amount == 0) then
+			(
+				$.visibility = false
+			hide $
+				)
+				
+			
+			
+			)
 		
 		
 		on clock20 tick do
@@ -470,6 +496,25 @@ on btn_makeLODs pressed do
 		print labelDebugText	
 		)
 		
+					on btn_selectLOD0 rightclick do
+	(
+		tempChildName = "*_LOD*"
+		select  (execute ("$'"+ tempChildName + "'"))
+			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
+			visibilityValue = 0
+		setVisibilitySelected(visibilityValue)
+		tempChildName = "*_LOD0*"
+		select  (execute ("$'"+ tempChildName + "'"))
+			visibilityValue = 1
+		setVisibilitySelected(visibilityValue)
+		labelDebugText +="All " +selection.count as string + " _LOD0's Visibility set to 1.0!"
+		print labelDebugText	
+			slider_LODswitch.value = 0
+		)
+		
+		
+		
+		
 					on btn_selectLOD1 pressed do
 	(
 		tempChildName = "*_LOD1*"
@@ -477,6 +522,21 @@ on btn_makeLODs pressed do
 		labelDebugText ="All " +selection.count as string + " _LOD1's selected!"
 		print labelDebugText	
 		)
+		
+					on btn_selectLOD1 rightclick do
+	(
+		tempChildName = "*_LOD*"
+		select  (execute ("$'"+ tempChildName + "'"))
+			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
+		setVisibilitySelected(0)
+		tempChildName = "*_LOD1*"
+		select  (execute ("$'"+ tempChildName + "'"))
+		setVisibilitySelected(1.0)
+		labelDebugText +="All " +selection.count as string + " _LOD1's Visibility set to 1.0!"
+		print labelDebugText	
+			slider_LODswitch.value = 1
+		)	
+		
 		
 					on btn_selectLOD2 pressed do
 	(
@@ -486,6 +546,21 @@ on btn_makeLODs pressed do
 		print labelDebugText	
 		)
 		
+						on btn_selectLOD2 rightclick do
+	(
+		tempChildName = "*_LOD*"
+		select  (execute ("$'"+ tempChildName + "'"))
+			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
+		setVisibilitySelected(0)
+		tempChildName = "*_LOD2*"
+		select  (execute ("$'"+ tempChildName + "'"))
+		setVisibilitySelected(1.0)
+		labelDebugText +="All " +selection.count as string + " _LOD2's Visibility set to 1.0!"
+		print labelDebugText	
+			slider_LODswitch.value = 2
+		)
+		
+		
 					on btn_selectLOD3 pressed do
 	(
 		tempChildName = "*_LOD3*"
@@ -493,6 +568,23 @@ on btn_makeLODs pressed do
 		labelDebugText ="All " +selection.count as string + " _LOD3's selected!"
 		print labelDebugText	
 		)
+						on btn_selectLOD3 rightclick do
+	(
+		tempChildName = "*_LOD*"
+		select  (execute ("$'"+ tempChildName + "'"))
+			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
+		setVisibilitySelected(0)
+		tempChildName = "*_LOD3*"
+		select  (execute ("$'"+ tempChildName + "'"))
+		setVisibilitySelected(1.0)
+		labelDebugText +="All " +selection.count as string + " _LOD3's Visibility set to 1.0!"
+		print labelDebugText	
+			slider_LODswitch.value = 3
+		)
+		
+		
+		
+		
 
 					on btn_selectLOD4 pressed do
 	(
@@ -501,6 +593,39 @@ on btn_makeLODs pressed do
 		labelDebugText ="All " +selection.count as string + " _LOD4's selected!"
 		print labelDebugText	
 		)
+		
+						on btn_selectLOD4 rightclick do
+	(
+		tempChildName = "*_LOD*"
+		select  (execute ("$'"+ tempChildName + "'"))
+			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
+		setVisibilitySelected(0)
+		tempChildName = "*_LOD4*"
+		select  (execute ("$'"+ tempChildName + "'"))
+		setVisibilitySelected(1.0)
+		labelDebugText +="All " +selection.count as string + " _LOD4's Visibility set to 1.0!"
+		print labelDebugText	
+			slider_LODswitch.value = 4
+		)
+		
+		on btn_selectLODall pressed do
+		(
+			tempChildName = "*_LOD*"
+		select  (execute ("$'"+ tempChildName + "'"))
+			labelDebugText ="All " +selection.count as string + " _LOD's selected!"
+		
+			)
+		
+		
+		on btn_selectLODall rightclick do
+		(
+			
+			tempChildName = "*_LOD*"
+		select  (execute ("$'"+ tempChildName + "'"))
+			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 1.0!"
+		setVisibilitySelected(1)
+			slider_LODswitch.value = 0
+			)
 		
 		
 		on btn_expLODs pressed do
