@@ -48,7 +48,7 @@ macroScript makeLODs
 			
 
 			
-		rollout roll_makeLODs "makeLODs 0.4" width:410 height:710
+		rollout roll_makeLODs "makeLODs 0.5" width:410 height:710
 	(
 		label lbl1 "LOD Object:" align:#left
 		edittext edt_LODobject "" text:LODobject_Name
@@ -249,12 +249,14 @@ fn fn_decimateLOD lodNumber =
 on percentage_spinner1 changed val1spinner do 
 		(
 			percentage_slider1.value = val1spinner
+			arr_lodVal[1] = percentage_slider1.value
 			labelDebugText = ("LOD0 reduction percentage: " + percentage_slider1.value as string )
 
 		)
 				on percentage_slider1 changed val1slider do 
 		(
 			percentage_spinner1.value = val1slider
+			arr_lodVal[1] = percentage_slider1.value
 						labelDebugText = ("LOD0 reduction percentage set to: " + percentage_spinner1.value as string )
 
 
@@ -263,6 +265,7 @@ on percentage_spinner1 changed val1spinner do
 		on percentage_spinner2 changed val2spinner do 
 		(
 			percentage_slider2.value = val2spinner
+			arr_lodVal[2] = percentage_slider2.value
 						labelDebugText = ("LOD1 reduction percentage: " + percentage_slider2.value as string )
 
 
@@ -270,6 +273,7 @@ on percentage_spinner1 changed val1spinner do
 				on percentage_slider2 changed val2slider do 
 		(
 			percentage_spinner2.value = val2slider
+			arr_lodVal[2] = percentage_slider2.value
 									labelDebugText = ("LOD1 reduction percentage set to: " + percentage_spinner2.value as string )
 
 
@@ -277,6 +281,7 @@ on percentage_spinner1 changed val1spinner do
 		on percentage_spinner3 changed val3spinner do 
 		(
 			percentage_slider3.value = val3spinner
+			arr_lodVal[3] = percentage_slider3.value
 									labelDebugText = ("LOD2 reduction percentage: " + percentage_slider3.value as string )
 
 			
@@ -285,12 +290,14 @@ on percentage_spinner1 changed val1spinner do
 				on percentage_slider3 changed val3slider do 
 		(
 			percentage_spinner3.value = val3slider
+			arr_lodVal[3] = percentage_slider3.value
 												labelDebugText = ("LOD2 reduction percentage set to: " + percentage_spinner3.value as string )
 
 		)
 		on percentage_spinner4 changed val4spinner do 
 		(
 			percentage_slider4.value = val4spinner
+			arr_lodVal[4] = percentage_slider4.value
 												labelDebugText = ("LOD3 reduction percentage: " + percentage_slider4.value as string )
 
 
@@ -298,12 +305,14 @@ on percentage_spinner1 changed val1spinner do
 				on percentage_slider4 changed val4slider do 
 		(
 			percentage_spinner4.value = val4slider
+			arr_lodVal[4] = percentage_slider4.value
 												labelDebugText = ("LOD3 reduction percentage set to: " + percentage_spinner4.value as string )
 
 		)
 		on percentage_spinner5 changed val5spinner do 
 		(
 			percentage_slider5.value = val5spinner
+			arr_lodVal[5] = percentage_slider5.value
 												labelDebugText = ("LOD4 reduction percentage: " + percentage_slider5.value as string )
 
 
@@ -311,22 +320,23 @@ on percentage_spinner1 changed val1spinner do
 				on percentage_slider5 changed val5slider do 
 		(
 			percentage_spinner5.value = val5slider
+			arr_lodVal[5] = percentage_slider5.value
 												labelDebugText = ("LOD4 reduction percentage set to: " + percentage_spinner5.value as string )
 
 
 		)
 		on btn_defaults pressed do
 		(
-				percentage_slider1.value = 	percentage_spinner1.value = arr_lodVal[1] as float
+				percentage_slider1.value = 	percentage_spinner1.value = arr_lodVal[1] = 100.0
 
 
-								percentage_slider2.value = 	percentage_spinner2.value = arr_lodVal[2] as float
+								percentage_slider2.value = 	percentage_spinner2.value = arr_lodVal[2] = 75.0
 
-								percentage_slider3.value = 	percentage_spinner3.value = arr_lodVal[3] as float
+								percentage_slider3.value = 	percentage_spinner3.value = arr_lodVal[3] = 50.0
 
-											percentage_slider4.value = 	percentage_spinner4.value = arr_lodVal[4] as float
+											percentage_slider4.value = 	percentage_spinner4.value = arr_lodVal[4] = 25.0
 
-											percentage_slider5.value = 	percentage_spinner5.value = arr_lodVal[5] as float
+											percentage_slider5.value = 	percentage_spinner5.value = arr_lodVal[5] = 10.0
 
 
 				labelDebugText = (
