@@ -401,7 +401,7 @@ on percentage_spinner1 changed val1spinner do
 			fn_setVisibilitySelected(0)
 			fn_selectLOD(lodToSet)
 			fn_setVisibilitySelected(1.0)
-			labelDebugText = ("LODselected: " + valLODswitch as string )
+			labelDebugText = ("LODselected: " + floor(valLODswitch) as string + " ( "+valLODswitch as string+    " )")
 		)
 		
 		
