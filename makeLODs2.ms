@@ -1,6 +1,6 @@
 macroScript makeLODs
  Category:"_Piro_Tools"
- toolTip:"makeLODs 0.4"
+ toolTip:"makeLODs 0.8"
  buttontext:"makeLODs"
 (
 
@@ -18,18 +18,22 @@ macroScript makeLODs
 	clearListener()
 			
 			valUp = 0
-						global canWeGo = false
-						global detected = false
+		global	lastLodToSet= 9
+		
+			global canWeGo = false
+			global detected = false
 			global arr_makeLODs = #(true, true, true, true, false)
 			global arr_lodVal = #(100, 75, 50, 25, 15)
-						global workObject = try($)catch()
-						global tempObject
-						global arr_lodObjects = #()
+			global workObject = try($)catch()
+			global tempObject
+			global arr_lodObjects = #()
 			global arr_lodObjectsNames =#()
 			global lodObjectStartVerts =0
 			global arr_lodObjectsEndVerts = #()
 			global lodObjectStartFaces = 0
 			global arr_lodObjectsEndFaces = #()
+			global lodObjectStartTriangles = 0
+			global arr_lodObjectsEndTriangles =#()
 			global currentWorkName = ""
 			global lastWorkName = "Last"
 			global newWorkObject = false
@@ -40,7 +44,11 @@ macroScript makeLODs
 															"3. Set desired settings, adjust LOD percentages if needed. \n"  +
 															"4. Click ITS GO TIME to start generation process. \n" +
 															"Unless you unchecked backup option, if something go wrong, \nyou can restore by using right button. \n" +
-															"\n \n Hover over any UI element to get tooltip help."
+															"\nHover over any UI element to get tooltip help." +
+							
+							"\nAfter picking object, you can change slider values to see predicted \ntri/vert values for final object "+
+							"\nAfter processing object, you can quickselect or preview lod \nvalues using buttons or slider."+
+							"\n After quickselecting, you can export selection with 1 click \njust export one mesh manually to set preferences for 3dmax."
 							
 							    							
 							
@@ -51,7 +59,7 @@ macroScript makeLODs
 			
 
 			
-		rollout roll_makeLODs "makeLODs 0.6" width:410 height:710
+		rollout roll_makeLODs "makeLODs 0.8" width:410 height:710
 	(
 		label lbl1 "LOD Object:" align:#left
 		edittext edt_LODobject "" text:LODobject_Name
@@ -74,7 +82,12 @@ macroScript makeLODs
 		spinner percentage_spinner4 "" range:[0,100,25] type:#float pos:[220,180] fieldwidth:40 toolTip:"Set percentage of original mesh triangles."
 		spinner percentage_spinner5 "" range:[0,100,15] type:#float pos:[290,180] fieldwidth:40 toolTip:"Set percentage of original mesh triangles."
 		
-		button btn_defaults "Default Values" checked:false pos:[340, 100] width:60 height:60 tooltip:"Return to default LOD values of \n100/75/50/25/10."
+		
+		
+		button btn_evaluate "Predict Result" checked:false pos:[340, 90] width:60 height:60 tooltip:"Predict results of LOD creation in Triangles / Faces / Verts."
+		button btn_defaults "Defaults" checked:false pos:[340, 150] width:60 height:20 tooltip:"Return to default LOD values of \n100/75/50/25/10."
+		
+		
 		checkbutton cbx_is_enable_1 "-LOD0-" checked:true pos:[10, 200] tooltip:"Enable // Disable LOD creation of this level."
 		checkbutton cbx_is_enable_2 "-LOD1-" checked:true pos:[80, 200] tooltip:"Enable // Disable LOD creation of this level."
 		checkbutton cbx_is_enable_3 "-LOD2-" checked:true pos:[150, 200] tooltip:"Enable // Disable LOD creation of this level."
@@ -130,13 +143,17 @@ detected = true
 	)
 	
 	)
+
 	
 	fn fn_getOriginalMeshData obj =
 	(
 			lodObjectStartVerts =(polyop.getNumVerts obj ) as float
 
 			lodObjectStartFaces =(polyop.getNumFaces obj) as float
-	)
+		
+		lodObjectStartTriangles = ($.mesh.numfaces) as float
+	)	
+	
 	
 		fn fn_backupOriginalMesh obj =
 		(
@@ -146,8 +163,7 @@ maxOps.cloneNodes workObject offset:[0,0,0] cloneType:#copy actualNodeList:#() n
 tempObject = result[1]
 					tempObject.name = (workObject.name + "_org")
 					labelDebugText = ("Mesh copied as: " + tempObject.name as string )
-			)
-			
+			)			
 fn fn_copyOriginalMesh index =
 (
 				resultLOD = #()
@@ -157,6 +173,8 @@ arr_lodObjects[index] = resultLOD[index]
 	
 	
 	)	
+	
+	
 fn fn_decimateLOD lodNumber =
 (
 
@@ -192,13 +210,104 @@ fn fn_decimateLOD lodNumber =
 	converttopoly $	
 		
 	arr_lodObjectsEndVerts[lodNumber] =  polyop.getNumVerts $
-	arr_lodObjectsEndFaces[lodNumber] =  polyop.getNumFaces $
-		
+	arr_lodObjectsEndFaces[lodNumber] =  polyop.getNumFaces --$.mesh.numfaces
+			
+		arr_lodObjectsEndTriangles[lodNumber] = $.mesh.numfaces
     arr_lodObjectsNames[lodNumber] = (LODobject_Name + "_LOD" + (lodNumber-1) as string)
 		
 
 		)
+		
+		
+	fn fn_getTriangleCountSelected objs =
+	(
+		triangleAmount = 0
+		
+		for o in objs do
+		(
+			triangleAmount = triangleAmount + o.mesh.numfaces
+			
+			)
+		
+				
+		return triangleAmount as String
+		)	
+		
+		
+	fn fn_getVerticleCountSelected objs =
+	(
+		verticleAmount = 0
+			for o in objs do
+		(
+			verticleAmount = verticleAmount + polyop.getNumVerts o
+			)
+			
+		return verticleAmount as String
+		)
+		
+		
+			fn fn_getFaceCountSelected objs =
+	(
+		verticleAmount = 0
+			for o in objs do
+		(
+			verticleAmount = verticleAmount + polyop.getNumFaces o
+			)
+			
+		return verticleAmount as String
+		)
+		
+		
 	
+		fn fn_predictTrianglesVerts percentageVal typeVal objVal =
+		(
+			if (objVal != null) then
+			(
+				if (typeVal == 1) then
+				(
+				tempVal = polyop.getNumFaces objVal
+									
+				)
+				if typeVal == 2 then
+				(
+					
+					tempVal = polyop.getNumVerts objVal
+					
+					)
+				
+				
+				returnVal = ((tempVal *  percentageVal)	/ 100 )				
+					
+					
+				) else (returnVal = 0)
+			
+			
+			
+			return returnVal
+			)
+			
+		
+		fn resultPredict percentValue =
+		(
+			if (workObject != null) then 
+			(
+				typeFirst = 1
+				typeSecond = 2
+				valueToPass = percentValue as float
+				
+				theresult1= fn_predictTrianglesVerts valueToPass typeFirst workObject
+				theresult2 = fn_predictTrianglesVerts valueToPass typeSecond workObject
+				--print theresult
+			returnString = ("\nPredicted outcome: " + floor(theresult1) as string + " triangles, "+  floor(theresult2) as string + " verticles.")
+			)
+			
+			
+			return returnString
+			
+			)
+		
+		
+		
 		fn fn_selectLOD lodNumber =
 		(
 						if (lodNumber == -1) then
@@ -318,14 +427,19 @@ on percentage_spinner1 changed val1spinner do
 			percentage_slider1.value = val1spinner
 			arr_lodVal[1] = percentage_slider1.value
 			labelDebugText = ("LOD0 reduction percentage: " + percentage_slider1.value as string )
-
+			labelDebugText += resultPredict(arr_lodVal[1])
+			
+			
+			
+			
+			
 		)
 				on percentage_slider1 changed val1slider do 
 		(
 			percentage_spinner1.value = val1slider
 			arr_lodVal[1] = percentage_slider1.value
 						labelDebugText = ("LOD0 reduction percentage set to: " + percentage_spinner1.value as string )
-
+labelDebugText += resultPredict(arr_lodVal[1]) as string
 
 		)
 		
@@ -334,7 +448,7 @@ on percentage_spinner1 changed val1spinner do
 			percentage_slider2.value = val2spinner
 			arr_lodVal[2] = percentage_slider2.value
 						labelDebugText = ("LOD1 reduction percentage: " + percentage_slider2.value as string )
-
+labelDebugText += resultPredict(arr_lodVal[2])
 
 		)
 				on percentage_slider2 changed val2slider do 
@@ -342,7 +456,7 @@ on percentage_spinner1 changed val1spinner do
 			percentage_spinner2.value = val2slider
 			arr_lodVal[2] = percentage_slider2.value
 									labelDebugText = ("LOD1 reduction percentage set to: " + percentage_spinner2.value as string )
-
+labelDebugText += resultPredict(arr_lodVal[2])
 
 		)
 		on percentage_spinner3 changed val3spinner do 
@@ -350,7 +464,7 @@ on percentage_spinner1 changed val1spinner do
 			percentage_slider3.value = val3spinner
 			arr_lodVal[3] = percentage_slider3.value
 									labelDebugText = ("LOD2 reduction percentage: " + percentage_slider3.value as string )
-
+labelDebugText += resultPredict(arr_lodVal[3])
 			
 
 		)
@@ -359,14 +473,14 @@ on percentage_spinner1 changed val1spinner do
 			percentage_spinner3.value = val3slider
 			arr_lodVal[3] = percentage_slider3.value
 												labelDebugText = ("LOD2 reduction percentage set to: " + percentage_spinner3.value as string )
-
+labelDebugText += resultPredict(arr_lodVal[3])
 		)
 		on percentage_spinner4 changed val4spinner do 
 		(
 			percentage_slider4.value = val4spinner
 			arr_lodVal[4] = percentage_slider4.value
 												labelDebugText = ("LOD3 reduction percentage: " + percentage_slider4.value as string )
-
+labelDebugText += resultPredict(arr_lodVal[4])
 
 		)
 				on percentage_slider4 changed val4slider do 
@@ -374,14 +488,14 @@ on percentage_spinner1 changed val1spinner do
 			percentage_spinner4.value = val4slider
 			arr_lodVal[4] = percentage_slider4.value
 												labelDebugText = ("LOD3 reduction percentage set to: " + percentage_spinner4.value as string )
-
+labelDebugText += resultPredict(arr_lodVal[4])
 		)
 		on percentage_spinner5 changed val5spinner do 
 		(
 			percentage_slider5.value = val5spinner
 			arr_lodVal[5] = percentage_slider5.value
 												labelDebugText = ("LOD4 reduction percentage: " + percentage_slider5.value as string )
-
+labelDebugText += resultPredict(arr_lodVal[5])
 
 		)
 				on percentage_slider5 changed val5slider do 
@@ -389,7 +503,7 @@ on percentage_spinner1 changed val1spinner do
 			percentage_spinner5.value = val5slider
 			arr_lodVal[5] = percentage_slider5.value
 												labelDebugText = ("LOD4 reduction percentage set to: " + percentage_spinner5.value as string )
-
+labelDebugText += resultPredict(arr_lodVal[5])
 
 		)
 		
@@ -401,7 +515,20 @@ on percentage_spinner1 changed val1spinner do
 			fn_setVisibilitySelected(0)
 			fn_selectLOD(lodToSet)
 			fn_setVisibilitySelected(1.0)
-			labelDebugText = ("LODselected: " + floor(valLODswitch) as string + " ( "+valLODswitch as string+    " )")
+			
+if (lodToSet != lastLodToSet) then
+(			labelDebugText = ("LODselected: " + floor(valLODswitch) as string + " ( "+valLODswitch as string+    " )")
+			objs = selection
+			tempFaces =	fn_getFaceCountSelected(objs)
+			tempVerts = fn_getVerticleCountSelected(objs)
+			tempTriangles = fn_getTriangleCountSelected(objs)
+			--print (lastLodToSet as string +" change! " + lodToSet as string) 
+	lastLodToSet = lodToSet
+	labelDebugText += "\nOn scene: " +selection.count as string + " LOD" + lastLodToSet as string +" meshes with:\n" +tempTriangles+ " Triangles \n" +tempFaces+ " Faces \n" +tempVerts+ " Verticles\n"
+	
+	
+			)
+			
 		)
 		
 		
@@ -435,6 +562,44 @@ on percentage_spinner1 changed val1spinner do
 			
 
 		)
+		
+		on btn_evaluate pressed do
+		(
+			stringObjName =( workObject.name + "\n")
+			if (arr_makeLODs[1] == true) then 
+			(
+			stringLOD1Summary = ("\nLOD1 at " + arr_lodVal[1] as string +"%" +resultPredict(arr_lodVal[1]) )
+			) else (stringLOD1Summary="\nNo LOD1.\n")
+			
+			if (arr_makeLODs[2] == true) then 
+			(
+			stringLOD2Summary = ("\nLOD2 at " +arr_lodVal[2] as string+"%" +resultPredict(arr_lodVal[2]) )
+			) else (stringLOD2Summary="\nNo LOD2.\n")
+			
+			if (arr_makeLODs[3] == true) then 
+			(
+			stringLOD3Summary = ("\nLOD2 at " +arr_lodVal[2] as string+"%" +resultPredict(arr_lodVal[2]) )
+			) else (stringLOD3Summary="\nNo LOD2.\n")
+			
+			if (arr_makeLODs[3] == true) then 
+			(
+			stringLOD3Summary = ("\nLOD3 at "+ arr_lodVal[3] as string+"%" +resultPredict(arr_lodVal[3]) ) 
+			) else (stringLOD3Summary="\nNo LOD3.\n")
+			
+			if (arr_makeLODs[4] == true) then 
+			(
+			stringLOD4Summary =( "\nLOD4 at "+ arr_lodVal[4] as string+"%" +resultPredict(arr_lodVal[4]) )
+			) else (stringLOD4Summary="\nNo LOD4.\n")
+			
+			if (arr_makeLODs[5] == true) then 
+			(
+			stringLOD5Summary =( "\nLOD5 at " +arr_lodVal[5] as string+"%" +resultPredict(arr_lodVal[5]) )
+			) else (stringLOD5Summary="\nNo LOD5.\n")
+			
+			labelDebugText = stringObjName + stringLOD1Summary +stringLOD2Summary+ stringLOD3Summary + stringLOD4Summary+ stringLOD5Summary
+			
+			
+			)
 		
 		on btn_GetObject pressed do
 		(
@@ -512,12 +677,12 @@ on btn_makeLODs pressed do
 				(
 					fn_decimateLOD(j)
 					
-									print("LOD " +(j-1) as string + " is now " + arr_lodObjectsNames[j] as string + " and is decimated from \n" +  lodObjectStartFaces as string +
-											" to " + arr_lodObjectsEndFaces[j] as string +"(" +((arr_lodObjectsEndFaces[j] / lodObjectStartFaces )*100 ) as string + "%) faces , and " +
+									print("LOD " +(j-1) as string + " is now " + arr_lodObjectsNames[j] as string + " and is decimated from \n" +  lodObjectStartTriangles as string +
+											" to " + arr_lodObjectsEndTriangles[j] as string +"(" +((arr_lodObjectsEndTriangles[j] / lodObjectStartTriangles )*100 ) as string + "%) Triangles , and " +
 										lodObjectStartVerts as string +" to " + arr_lodObjectsEndVerts[j] as string +"(" +((arr_lodObjectsEndVerts[j] / lodObjectStartVerts)*100 ) as string + "%) verts .\n"+
 										"---------------------------------------------------------------------------------------" )
 										
-										labelDebugText += ("LOD" +(j-1) as string+": \n[" +  lodObjectStartFaces as string +" -> " + arr_lodObjectsEndFaces[j] as string +"(" +((arr_lodObjectsEndFaces[j] / lodObjectStartFaces )*100 ) as string + "%) faces] \n[" +
+										labelDebugText += ("LOD" +(j-1) as string+": \n[" +  lodObjectStartTriangles as string +" -> " + arr_lodObjectsEndTriangles[j] as string +"(" +((arr_lodObjectsEndTriangles[j] / lodObjectStartTriangles )*100 ) as string + "%) triangles] \n[" +
 										lodObjectStartVerts as string +" -> " + arr_lodObjectsEndVerts[j] as string +" (" +((arr_lodObjectsEndVerts[j] / lodObjectStartVerts)*100 ) as string + "%) verts]\n" 
 										)				
 										windows.processPostedMessages()
@@ -560,6 +725,9 @@ on btn_makeLODs pressed do
 			visibilityValue = 1
 		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD0's Visibility set to 1.0!"
+		labelDebugText +="\nTriangles on scene: " + fn_getTriangleCountSelected(selection) + " || Verticles on scene:" + fn_getVerticleCountSelected(selection)
+		
+		
 		print labelDebugText	
 			slider_LODswitch.value = 0
 		)
@@ -582,6 +750,8 @@ on btn_makeLODs pressed do
 		fn_selectLOD(1)
 		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD1's Visibility set to 1.0!"
+				labelDebugText +="\nTriangles on scene: " + fn_getTriangleCountSelected(selection) + " || Verticles on scene:" + fn_getVerticleCountSelected(selection)
+		
 		print labelDebugText	
 			slider_LODswitch.value = 1
 		)	
@@ -602,6 +772,8 @@ fn_selectLOD(-1)
 fn_selectLOD(2)
 		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD2's Visibility set to 1.0!"
+				labelDebugText +="\nTriangles on scene: " + fn_getTriangleCountSelected(selection) + " || Verticles on scene:" + fn_getVerticleCountSelected(selection)
+		
 		print labelDebugText	
 			slider_LODswitch.value = 2
 		)
@@ -621,6 +793,8 @@ fn_selectLOD(-1)
 fn_selectLOD(3)
 		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD3's Visibility set to 1.0!"
+				labelDebugText +="\nTriangles on scene: " + fn_getTriangleCountSelected(selection) + " || Verticles on scene:" + fn_getVerticleCountSelected(selection)
+		
 		print labelDebugText	
 			slider_LODswitch.value = 3
 		)
@@ -644,6 +818,8 @@ fn_selectLOD(-1)
 fn_selectLOD(4)
 		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD4's Visibility set to 1.0!"
+				labelDebugText +="\nTriangles on scene: " + fn_getTriangleCountSelected(selection) + " || Verticles on scene:" + fn_getVerticleCountSelected(selection)
+		
 		print labelDebugText	
 			slider_LODswitch.value = 4
 		)
@@ -661,6 +837,8 @@ fn_selectLOD(-1)
 			
 fn_selectLOD(-1)
 			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 1.0!"
+					labelDebugText +="\nTriangles on scene: " + fn_getTriangleCountSelected(selection) + " || Verticles on scene:" + fn_getVerticleCountSelected(selection)
+		
 		fn_setVisibilitySelected(1)
 			slider_LODswitch.value = 0
 			)
