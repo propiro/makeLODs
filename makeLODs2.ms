@@ -199,7 +199,48 @@ fn fn_decimateLOD lodNumber =
 
 		)
 	
-		fn setVisibilitySelected amount =
+		fn fn_selectLOD lodNumber =
+		(
+						if (lodNumber == -1) then
+			(
+						tempChildName = "*_LOD*"
+		select  (execute ("$'"+ tempChildName + "'"))
+				)
+			if (lodNumber == 0) then
+			(
+						tempChildName = "*_LOD0*"
+		select  (execute ("$'"+ tempChildName + "'"))
+				)
+						if (lodNumber == 1) then
+			(
+						tempChildName = "*_LOD1*"
+		select  (execute ("$'"+ tempChildName + "'"))
+				)
+						if (lodNumber == 2) then
+			(
+						tempChildName = "*_LOD2*"
+		select  (execute ("$'"+ tempChildName + "'"))
+				)
+						if (lodNumber == 3) then
+			(
+						tempChildName = "*_LOD3*"
+		select  (execute ("$'"+ tempChildName + "'"))
+				)
+							if (lodNumber == 4) then
+			(
+						tempChildName = "*_LOD4*"
+		select  (execute ("$'"+ tempChildName + "'"))
+				)
+				
+				
+				
+				
+				
+			)
+		
+		
+		
+		fn fn_setVisibilitySelected amount =
 		(
 			if (amount != 0) then
 			(
@@ -351,6 +392,19 @@ on percentage_spinner1 changed val1spinner do
 
 
 		)
+		
+		on slider_LODswitch changed valLODswitch do 
+		(
+			lodToSet = floor(valLODswitch)
+			if (lodToSet >4) then (lodToSet = 4)
+			fn_selectLOD(-1)
+			fn_setVisibilitySelected(0)
+			fn_selectLOD(lodToSet)
+			fn_setVisibilitySelected(1.0)
+			labelDebugText = ("LODselected: " + valLODswitch as string )
+		)
+		
+		
 		on btn_defaults pressed do
 		(
 				percentage_slider1.value = 	percentage_spinner1.value = arr_lodVal[1] = 100.0
@@ -490,23 +544,21 @@ on btn_makeLODs pressed do
 		
 			on btn_selectLOD0 pressed do
 	(
-		tempChildName = "*_LOD0*"
-		select  (execute ("$'"+ tempChildName + "'"))
+		
+		fn_selectLOD(0)
 		labelDebugText ="All " +selection.count as string + " _LOD0's selected!"
 		print labelDebugText	
 		)
 		
 					on btn_selectLOD0 rightclick do
 	(
-		tempChildName = "*_LOD*"
-		select  (execute ("$'"+ tempChildName + "'"))
+		fn_selectLOD(-1)
 			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
 			visibilityValue = 0
-		setVisibilitySelected(visibilityValue)
-		tempChildName = "*_LOD0*"
-		select  (execute ("$'"+ tempChildName + "'"))
+		fn_setVisibilitySelected(0)
+		fn_selectLOD(0)
 			visibilityValue = 1
-		setVisibilitySelected(visibilityValue)
+		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD0's Visibility set to 1.0!"
 		print labelDebugText	
 			slider_LODswitch.value = 0
@@ -517,21 +569,18 @@ on btn_makeLODs pressed do
 		
 					on btn_selectLOD1 pressed do
 	(
-		tempChildName = "*_LOD1*"
-		select  (execute ("$'"+ tempChildName + "'"))
+		fn_selectLOD(1)
 		labelDebugText ="All " +selection.count as string + " _LOD1's selected!"
 		print labelDebugText	
 		)
 		
 					on btn_selectLOD1 rightclick do
 	(
-		tempChildName = "*_LOD*"
-		select  (execute ("$'"+ tempChildName + "'"))
+		fn_selectLOD(-1)
 			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
-		setVisibilitySelected(0)
-		tempChildName = "*_LOD1*"
-		select  (execute ("$'"+ tempChildName + "'"))
-		setVisibilitySelected(1.0)
+		fn_setVisibilitySelected(0)
+		fn_selectLOD(1)
+		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD1's Visibility set to 1.0!"
 		print labelDebugText	
 			slider_LODswitch.value = 1
@@ -540,21 +589,18 @@ on btn_makeLODs pressed do
 		
 					on btn_selectLOD2 pressed do
 	(
-		tempChildName = "*_LOD2*"
-		select  (execute ("$'"+ tempChildName + "'"))
+fn_selectLOD(2)
 		labelDebugText ="All " +selection.count as string + " _LOD2's selected!"
 		print labelDebugText	
 		)
 		
 						on btn_selectLOD2 rightclick do
 	(
-		tempChildName = "*_LOD*"
-		select  (execute ("$'"+ tempChildName + "'"))
+fn_selectLOD(-1)
 			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
-		setVisibilitySelected(0)
-		tempChildName = "*_LOD2*"
-		select  (execute ("$'"+ tempChildName + "'"))
-		setVisibilitySelected(1.0)
+		fn_setVisibilitySelected(0)
+fn_selectLOD(2)
+		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD2's Visibility set to 1.0!"
 		print labelDebugText	
 			slider_LODswitch.value = 2
@@ -563,20 +609,17 @@ on btn_makeLODs pressed do
 		
 					on btn_selectLOD3 pressed do
 	(
-		tempChildName = "*_LOD3*"
-		select  (execute ("$'"+ tempChildName + "'"))
+fn_selectLOD(3)
 		labelDebugText ="All " +selection.count as string + " _LOD3's selected!"
 		print labelDebugText	
 		)
 						on btn_selectLOD3 rightclick do
 	(
-		tempChildName = "*_LOD*"
-		select  (execute ("$'"+ tempChildName + "'"))
+fn_selectLOD(-1)
 			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
-		setVisibilitySelected(0)
-		tempChildName = "*_LOD3*"
-		select  (execute ("$'"+ tempChildName + "'"))
-		setVisibilitySelected(1.0)
+		fn_setVisibilitySelected(0)
+fn_selectLOD(3)
+		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD3's Visibility set to 1.0!"
 		print labelDebugText	
 			slider_LODswitch.value = 3
@@ -588,21 +631,18 @@ on btn_makeLODs pressed do
 
 					on btn_selectLOD4 pressed do
 	(
-		tempChildName = "*_LOD4*"
-		select  (execute ("$'"+ tempChildName + "'"))
+fn_selectLOD(4)
 		labelDebugText ="All " +selection.count as string + " _LOD4's selected!"
 		print labelDebugText	
 		)
 		
 						on btn_selectLOD4 rightclick do
 	(
-		tempChildName = "*_LOD*"
-		select  (execute ("$'"+ tempChildName + "'"))
+fn_selectLOD(-1)
 			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 0.0! "
-		setVisibilitySelected(0)
-		tempChildName = "*_LOD4*"
-		select  (execute ("$'"+ tempChildName + "'"))
-		setVisibilitySelected(1.0)
+		fn_setVisibilitySelected(0)
+fn_selectLOD(4)
+		fn_setVisibilitySelected(1.0)
 		labelDebugText +="All " +selection.count as string + " _LOD4's Visibility set to 1.0!"
 		print labelDebugText	
 			slider_LODswitch.value = 4
@@ -610,8 +650,7 @@ on btn_makeLODs pressed do
 		
 		on btn_selectLODall pressed do
 		(
-			tempChildName = "*_LOD*"
-		select  (execute ("$'"+ tempChildName + "'"))
+fn_selectLOD(-1)
 			labelDebugText ="All " +selection.count as string + " _LOD's selected!"
 		
 			)
@@ -620,10 +659,9 @@ on btn_makeLODs pressed do
 		on btn_selectLODall rightclick do
 		(
 			
-			tempChildName = "*_LOD*"
-		select  (execute ("$'"+ tempChildName + "'"))
+fn_selectLOD(-1)
 			labelDebugText ="All " +selection.count as string + " _LOD's Visibility set to 1.0!"
-		setVisibilitySelected(1)
+		fn_setVisibilitySelected(1)
 			slider_LODswitch.value = 0
 			)
 		
