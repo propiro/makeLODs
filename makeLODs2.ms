@@ -180,6 +180,8 @@ fn fn_decimateLOD lodNumber =
 
 	select arr_lodObjects[lodNumber]
 
+	if (arr_lodVal[lodNumber] <=0) then (arr_lodVal[lodNumber] = 0.05)
+
 	modPanel.addModToSelection(MultiRes())
 	$.modifiers[#MultiRes].vertexPercent = arr_lodVal[lodNumber]
 	$.modifiers[#MultiRes].multiVertNorm = true
