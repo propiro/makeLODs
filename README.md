@@ -1,7 +1,7 @@
 # makeLODs
 Short video about usage:
 
-![https://i.imgur.com/w4WtlKI.png](https://youtu.be/EQ9SxmdeoB0)
+![https://youtu.be/EQ9SxmdeoB0](https://i.imgur.com/w4WtlKI.png)
 
 Now features LOD preview slider!
 
@@ -19,6 +19,6 @@ http://www.scriptspot.com/3ds-max/scripts/makelods-3d-studio-max-automatic-lod-c
 
 Found it usefull and want to say thanks? You can do it through paypal:
 
-![](https://paypal.me/propiro) 
+https://paypal.me/propiro 
 
-Otherwise, crediting me and/or linking my artstation page ![](https://www.artstation.com/propiro/albums/662894) would greatly help anyway!
+Otherwise, crediting me and/or linking my artstation page https://www.artstation.com/propiro/albums/662894 would greatly help anyway!
