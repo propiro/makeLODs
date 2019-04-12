@@ -1,6 +1,6 @@
 macroScript makeLODs
  Category:"_Piro_Tools"
- toolTip:"makeLODs 0.8"
+ toolTip:"makeLODs 0.9"
  buttontext:"makeLODs"
 (
 
@@ -59,7 +59,7 @@ macroScript makeLODs
 			
 
 			
-		rollout roll_makeLODs "makeLODs 0.8" width:410 height:710
+		rollout roll_makeLODs "makeLODs 0.9" width:410 height:710
 	(
 		label lbl1 "LOD Object:" align:#left
 		edittext edt_LODobject "" text:LODobject_Name
@@ -527,7 +527,7 @@ if (lodToSet != lastLodToSet) then
 			--print (lastLodToSet as string +" change! " + lodToSet as string) 
 	lastLodToSet = lodToSet
 	labelDebugText += "\nOn scene: " +selection.count as string + " LOD" + lastLodToSet as string +" meshes with:\n" +tempTriangles+ " Triangles \n" +tempFaces+ " Faces \n" +tempVerts+ " Verticles\n"
-	
+	redrawViews()
 	
 			)
 			
@@ -732,6 +732,7 @@ on btn_makeLODs pressed do
 		
 		print labelDebugText	
 			slider_LODswitch.value = 0
+		redrawViews()
 		)
 		
 		
@@ -756,6 +757,7 @@ on btn_makeLODs pressed do
 		
 		print labelDebugText	
 			slider_LODswitch.value = 1
+		redrawViews()
 		)	
 		
 		
@@ -778,6 +780,7 @@ fn_selectLOD(2)
 		
 		print labelDebugText	
 			slider_LODswitch.value = 2
+		redrawViews()
 		)
 		
 		
@@ -799,6 +802,7 @@ fn_selectLOD(3)
 		
 		print labelDebugText	
 			slider_LODswitch.value = 3
+		redrawViews()
 		)
 		
 		
@@ -824,6 +828,7 @@ fn_selectLOD(4)
 		
 		print labelDebugText	
 			slider_LODswitch.value = 4
+		redrawViews()
 		)
 		
 		on btn_selectLODall pressed do
@@ -843,6 +848,7 @@ fn_selectLOD(-1)
 		
 		fn_setVisibilitySelected(1)
 			slider_LODswitch.value = 0
+			redrawViews()
 			)
 		
 		
