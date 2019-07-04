@@ -1,6 +1,6 @@
 # makeLODs
 Short video about usage:
-
+https://youtu.be/EQ9SxmdeoB0
 ![https://youtu.be/EQ9SxmdeoB0](https://i.imgur.com/w4WtlKI.png)
 
 Now features LOD preview slider!
